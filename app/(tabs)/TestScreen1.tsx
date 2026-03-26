@@ -14,7 +14,13 @@ export default function TestScreen1() {
   function onPressLearnMore(event: GestureResponderEvent): void {
     let _a = a;
     _a++;
-    seta(a);
+    seta(_a);
+    console.log(`a:${a}`);
+  }
+  function onDecA(event: GestureResponderEvent): void {
+    let _a = a;
+    _a--;
+    seta(_a);
     console.log(`a:${a}`);
   }
 
@@ -25,7 +31,13 @@ export default function TestScreen1() {
         <Text>a: {a}</Text>
         <Button
           onPress={onPressLearnMore}
-          title="Learn More"
+          title="증가"
+          color="#841584"
+          accessibilityLabel="Learn more about this purple button"
+        />
+        <Button
+          onPress={onDecA}
+          title="감소"
           color="#841584"
           accessibilityLabel="Learn more about this purple button"
         />
