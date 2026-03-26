@@ -1,10 +1,10 @@
-import { StyleSheet, Text, View } from "react-native";
+import { ScrollView, StyleSheet, Text } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function HomeScreen() {
   return (
     <SafeAreaView>
-      <View>
+      <ScrollView>
         <Text>홈화면 이에요</Text>
         <Text>홈화면 이에요2</Text>
         <Text>홈화면 이에요3</Text>
@@ -55,7 +55,7 @@ export default function HomeScreen() {
         <Text>홈화면 이에요48</Text>
         <Text>홈화면 이에요49</Text>
         <Text>홈화면 이에요50</Text>
-      </View>
+      </ScrollView>
     </SafeAreaView>
   );
 }
