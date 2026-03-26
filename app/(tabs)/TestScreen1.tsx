@@ -1,3 +1,4 @@
+import { useState } from "react";
 import {
   Button,
   GestureResponderEvent,
@@ -8,10 +9,12 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function TestScreen1() {
-  let a = 0;
+  const [a, seta] = useState(0);
 
   function onPressLearnMore(event: GestureResponderEvent): void {
-    a++;
+    let _a = a;
+    _a++;
+    seta(a);
     console.log(`a:${a}`);
   }
 
