@@ -33,6 +33,7 @@ export default function MemoScreen() {
             }}
             value={multi_input}
             placeholder="여러줄 입력란"
+            style={styles.textInput}
           />
         </View>
       </ScrollView>
@@ -40,4 +41,11 @@ export default function MemoScreen() {
   );
 }
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+  textInput: {
+    padding: 10,
+    borderColor: "#000",
+    borderWidth: 1,
+    margin: 12,
+  },
+});
