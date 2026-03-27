@@ -5,6 +5,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function MemoScreen() {
   const [myinput, set_myinput] = useState("");
+  const [multi_input, set_multi_input] = useState("");
 
   return (
     <SafeAreaView>
@@ -13,7 +14,7 @@ export default function MemoScreen() {
         <View>
           <Label>입력:</Label>
           <TextInput
-            onChangeText={(e) => {
+            onChangeText={(e: string) => {
               set_myinput(e);
             }}
             value={myinput}
@@ -21,6 +22,19 @@ export default function MemoScreen() {
           />
         </View>
         <Text>my input: {myinput}</Text>
+        <View>
+          <TextInput
+            editable
+            multiline
+            numberOfLines={4}
+            maxLength={40}
+            onChangeText={(e: string) => {
+              set_multi_input(e);
+            }}
+            value={multi_input}
+            placeholder="여러줄 입력란"
+          />
+        </View>
       </ScrollView>
     </SafeAreaView>
   );
