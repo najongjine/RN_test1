@@ -14,12 +14,13 @@ export default function MemoScreen() {
           <Label>입력:</Label>
           <TextInput
             onChangeText={(e) => {
-              console.log(e);
+              set_myinput(e);
             }}
             value={myinput}
             placeholder="입력하는곳"
           />
         </View>
+        <Text>my input: {myinput}</Text>
       </ScrollView>
     </SafeAreaView>
   );
