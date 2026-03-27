@@ -4,7 +4,7 @@ import { ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function MemoScreen() {
-  const [a, seta] = useState(0);
+  const [myinput, set_myinput] = useState("");
 
   return (
     <SafeAreaView>
@@ -13,8 +13,10 @@ export default function MemoScreen() {
         <View>
           <Label>입력:</Label>
           <TextInput
-            onChangeText={(e) => {}}
-            value={""}
+            onChangeText={(e) => {
+              console.log(e);
+            }}
+            value={myinput}
             placeholder="입력하는곳"
           />
         </View>
