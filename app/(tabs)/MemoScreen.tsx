@@ -67,6 +67,7 @@ export default function MemoScreen() {
         </View>
         <View>
           <Pressable
+            onPress={(e) => {}}
             style={({ pressed }) => [
               {
                 backgroundColor: pressed ? "rgb(210, 230, 255)" : "white",
