@@ -5,13 +5,14 @@ import { ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 interface MyInputsType {
-  myinput: string;
-  multi_input: string;
+  myinput?: string;
+  multi_input?: string;
 }
 
 export default function MemoScreen() {
   const [myinput, set_myinput] = useState("");
   const [multi_input, set_multi_input] = useState("");
+  const [custom_inputs, set_custom_inputs] = useState<MyInputsType>({});
 
   useFocusEffect(
     useCallback(() => {
