@@ -86,6 +86,24 @@ export default function MemoScreen() {
             )}
           </Pressable>
         </View>
+        <View>
+          <Text> 내가 지금까지 입력한것들: </Text>
+          {custom_inputs.map((e, index) => {
+            return (
+              <View key={index}>
+                <Text>myinput: {e.myinput}</Text>
+                <Text>multi_input: {e.multi_input}</Text>
+                <View
+                  style={{
+                    height: 1,
+                    backgroundColor: "#cccccc",
+                    marginVertical: 10,
+                  }}
+                />
+              </View>
+            );
+          })}
+        </View>
       </ScrollView>
     </SafeAreaView>
   );
