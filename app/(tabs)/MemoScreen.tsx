@@ -1,7 +1,14 @@
 import { Label } from "@react-navigation/elements";
 import { useFocusEffect } from "expo-router";
 import { useCallback, useState } from "react";
-import { ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
+import {
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 interface MyInputsType {
@@ -57,6 +64,23 @@ export default function MemoScreen() {
             placeholder="여러줄 입력란"
             style={styles.textInput}
           />
+        </View>
+        <View>
+          <Pressable
+            style={({ pressed }) => [
+              {
+                backgroundColor: pressed ? "rgb(210, 230, 255)" : "white",
+                padding: 10,
+                borderRadius: 8,
+              },
+            ]}
+          >
+            {({ pressed }) => (
+              <Text style={{ color: pressed ? "blue" : "black" }}>
+                {pressed ? "누르는 중!" : "눌러보세요"}
+              </Text>
+            )}
+          </Pressable>
         </View>
       </ScrollView>
     </SafeAreaView>
