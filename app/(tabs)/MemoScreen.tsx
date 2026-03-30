@@ -1,11 +1,29 @@
 import { Label } from "@react-navigation/elements";
-import { useState } from "react";
+import { useFocusEffect } from "expo-router";
+import { useCallback, useState } from "react";
 import { ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+
+interface MyInputsType {
+  myinput: string;
+  multi_input: string;
+}
 
 export default function MemoScreen() {
   const [myinput, set_myinput] = useState("");
   const [multi_input, set_multi_input] = useState("");
+
+  useFocusEffect(
+    useCallback(() => {
+      // 1. 화면이 포커스(진입) 되었을 때 실행할 로직
+      console.log("화면에 진입했습니다.");
+
+      return () => {
+        // 2. 화면이 포커스를 잃었을 때(나갈 때) 실행할 정리(Cleanup) 로직
+        console.log("화면에서 나갔습니다.");
+      };
+    }, []),
+  );
 
   return (
     <SafeAreaView>
