@@ -2,8 +2,8 @@ import { Label } from "@react-navigation/elements";
 import { useFocusEffect } from "expo-router";
 import { useCallback, useState } from "react";
 import {
+  FlatList,
   Pressable,
-  ScrollView,
   StyleSheet,
   Text,
   TextInput,
@@ -38,73 +38,78 @@ export default function MemoScreen() {
   }
 
   return (
-    <SafeAreaView>
-      <ScrollView>
-        <Text>메모 화면</Text>
-        <View>
-          <Label>입력:</Label>
-          <TextInput
-            onChangeText={(e: string) => {
-              set_myinput(e);
-            }}
-            value={myinput}
-            placeholder="입력하는곳"
-          />
-        </View>
-        <Text>my input: {myinput}</Text>
-        <View>
-          <TextInput
-            editable
-            multiline
-            numberOfLines={4}
-            maxLength={40}
-            onChangeText={(e: string) => {
-              set_multi_input(e);
-            }}
-            value={multi_input}
-            placeholder="여러줄 입력란"
-            style={styles.textInput}
-          />
-        </View>
-        <View>
-          <Pressable
-            onPress={(e) => {
-              onAddCustomInput({ myinput, multi_input });
-            }}
-            style={({ pressed }) => [
-              {
-                backgroundColor: pressed ? "rgb(210, 230, 255)" : "white",
-                padding: 10,
-                borderRadius: 8,
-              },
-            ]}
-          >
-            {({ pressed }) => (
-              <Text style={{ color: pressed ? "blue" : "black" }}>
-                {pressed ? "누르는 중!" : "눌러보세요"}
-              </Text>
-            )}
-          </Pressable>
-        </View>
-        <View>
-          <Text> 내가 지금까지 입력한것들: </Text>
-          {custom_inputs.map((e, index) => {
-            return (
-              <View key={index}>
-                <Text>myinput: {e.myinput}</Text>
-                <Text>multi_input: {e.multi_input}</Text>
-                <View
-                  style={{
-                    height: 1,
-                    backgroundColor: "#cccccc",
-                    marginVertical: 10,
-                  }}
-                />
-              </View>
-            );
-          })}
-        </View>
-      </ScrollView>
+    <SafeAreaView style={{ flex: 1 }}>
+      <FlatList
+        data={custom_inputs}
+        keyExtractor={(_, index) => index.toString()}
+        ListHeaderComponent={
+          <>
+            <Text>메모 화면</Text>
+            <View>
+              <Label>입력:</Label>
+              <TextInput
+                onChangeText={(e: string) => {
+                  set_myinput(e);
+                }}
+                value={myinput}
+                placeholder="입력하는곳"
+              />
+            </View>
+            <Text>my input: {myinput}</Text>
+            <View>
+              <TextInput
+                editable
+                multiline
+                numberOfLines={4}
+                maxLength={40}
+                onChangeText={(e: string) => {
+                  set_multi_input(e);
+                }}
+                value={multi_input}
+                placeholder="여러줄 입력란"
+                style={styles.textInput}
+              />
+            </View>
+            <View>
+              <Pressable
+                onPress={(e) => {
+                  onAddCustomInput({ myinput, multi_input });
+                }}
+                style={({ pressed }) => [
+                  {
+                    backgroundColor: pressed ? "rgb(210, 230, 255)" : "white",
+                    padding: 10,
+                    borderRadius: 8,
+                  },
+                ]}
+              >
+                {({ pressed }) => (
+                  <Text style={{ color: pressed ? "blue" : "black" }}>
+                    {pressed ? "누르는 중!" : "눌러보세요"}
+                  </Text>
+                )}
+              </Pressable>
+            </View>
+            <View style={{ marginTop: 20 }}>
+              <Text> 내가 지금까지 입력한것들: </Text>
+            </View>
+          </>
+        }
+        renderItem={({ item }) => (
+          <View style={{ paddingHorizontal: 10 }}>
+            <Text>myinput: {item.myinput}</Text>
+            <Text>multi_input: {item.multi_input}</Text>
+            <View
+              style={{
+                height: 1,
+                backgroundColor: "#cccccc",
+                marginVertical: 10,
+              }}
+            />
+          </View>
+        )}
+        contentContainerStyle={{ padding: 10 }}
+      />
     </SafeAreaView>
   );
 }
