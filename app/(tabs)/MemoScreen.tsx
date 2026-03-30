@@ -25,6 +25,10 @@ export default function MemoScreen() {
     }, []),
   );
 
+  function onAddCustomInput(e: MyInputsType) {
+    set_custom_inputs([...custom_inputs, e]);
+  }
+
   return (
     <SafeAreaView>
       <ScrollView>
