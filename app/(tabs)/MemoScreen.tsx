@@ -17,7 +17,6 @@ export default function MemoScreen() {
   useFocusEffect(
     useCallback(() => {
       // 1. 화면이 포커스(진입) 되었을 때 실행할 로직
-      console.log("화면에 진입했습니다.");
 
       return () => {
         // 2. 화면이 포커스를 잃었을 때(나갈 때) 실행할 정리(Cleanup) 로직
