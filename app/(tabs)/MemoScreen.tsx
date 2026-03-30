@@ -12,7 +12,7 @@ interface MyInputsType {
 export default function MemoScreen() {
   const [myinput, set_myinput] = useState("");
   const [multi_input, set_multi_input] = useState("");
-  const [custom_inputs, set_custom_inputs] = useState<MyInputsType>({});
+  const [custom_inputs, set_custom_inputs] = useState<MyInputsType[]>([]);
 
   useFocusEffect(
     useCallback(() => {
