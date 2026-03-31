@@ -1,3 +1,21 @@
+/*
+ React Native Expo + TypeScript에서 재사용 가능한 버튼 컴포넌트를 
+components/Button/MyCustomButton.tsx
+여기에 만들어줘.
+
+조건:
+- props: label, onPress, color, align, size
+- align: left | center | right
+- size 기본값: width 100%
+- size는 small, medium, large 프리셋 지원
+- color 기본값 지정
+- 부모 block 기준 정렬되게
+- StyleSheet 사용
+- 초보자도 이해 가능하게 
+
+
+야, margin도 넣을수 있냐?
+ */
 import React from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 
