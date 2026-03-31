@@ -1,3 +1,4 @@
+import MyButtonGroup from "@/components/Button/MyButtonGroup";
 import MyCustomButton from "@/components/Button/MyCustomButton";
 import { Label } from "@react-navigation/elements";
 import { useFocusEffect } from "expo-router";
@@ -91,15 +92,41 @@ export default function MemoScreen() {
                 )}
               </Pressable>
             </View>
-            <View>
+            <MyButtonGroup direction="column" align="start" gap={8}>
               <MyCustomButton
                 label="버튼"
                 onPress={() => {}}
                 color="#8adea9ff"
-                align="right"
+                size="medium"
+              />
+              <MyCustomButton
+                label="버튼2"
+                onPress={() => {}}
+                color="#8adea9ff"
                 size="small"
               />
-            </View>
+              <MyCustomButton
+                label="버3"
+                onPress={() => {}}
+                color="#8adea9ff"
+                size="small"
+              />
+            </MyButtonGroup>
+            <MyButtonGroup
+              direction="row"
+              justify="between"
+              align="center"
+              fullWidth
+            >
+              <MyButtonGroup direction="row" gap={8}>
+                <MyCustomButton label="버튼1" onPress={() => {}} size="small" />
+              </MyButtonGroup>
+
+              <MyButtonGroup direction="row" gap={8}>
+                <MyCustomButton label="버튼2" onPress={() => {}} size="small" />
+                <MyCustomButton label="버튼3" onPress={() => {}} size="small" />
+              </MyButtonGroup>
+            </MyButtonGroup>
             <View style={{ marginTop: 20 }}>
               <Text> 내가 지금까지 입력한것들: </Text>
             </View>
