@@ -92,7 +92,12 @@ export default function MemoScreen() {
                 )}
               </Pressable>
             </View>
-            <MyButtonGroup direction="column" align="start" gap={8}>
+            <MyButtonGroup
+              direction="row"
+              align="start"
+              gap={8}
+              justify="between"
+            >
               <MyCustomButton
                 label="버튼"
                 onPress={() => {}}

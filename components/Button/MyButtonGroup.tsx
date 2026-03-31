@@ -10,6 +10,7 @@ interface MyButtonGroupProps {
   justify?: MainAlign;
   align?: CrossAlign;
   gap?: number;
+  margin?: number;
   fullWidth?: boolean;
   style?: ViewStyle;
   children: React.ReactNode;
@@ -36,6 +37,7 @@ export default function MyButtonGroup({
   justify = "start",
   align = "center",
   gap = 8,
+  margin = 2,
   fullWidth = false,
   style,
   children,
@@ -50,6 +52,7 @@ export default function MyButtonGroup({
           justifyContent: justifyMap[justify],
           alignItems: alignMap[align],
           gap,
+          margin,
         },
         style,
       ]}
