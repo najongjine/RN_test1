@@ -3,14 +3,7 @@ import MyCustomButton from "@/components/Button/MyCustomButton";
 import { Label } from "@react-navigation/elements";
 import { useFocusEffect } from "expo-router";
 import { useCallback, useState } from "react";
-import {
-  FlatList,
-  Pressable,
-  StyleSheet,
-  Text,
-  TextInput,
-  View,
-} from "react-native";
+import { FlatList, StyleSheet, Text, TextInput, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 interface MyInputsType {
@@ -72,35 +65,18 @@ export default function MemoScreen() {
                 style={styles.textInput}
               />
             </View>
-            <View>
-              <Pressable
-                onPress={(e) => {
-                  onAddCustomInput({ myinput, multi_input });
-                }}
-                style={({ pressed }) => [
-                  {
-                    backgroundColor: pressed ? "rgb(210, 230, 255)" : "white",
-                    padding: 10,
-                    borderRadius: 8,
-                  },
-                ]}
-              >
-                {({ pressed }) => (
-                  <Text style={{ color: pressed ? "blue" : "black" }}>
-                    {pressed ? "누르는 중!" : "눌러보세요"}
-                  </Text>
-                )}
-              </Pressable>
-            </View>
+
             <MyButtonGroup
               direction="row"
-              align="start"
-              gap={8}
-              justify="between"
+              align="center"
+              gap={5}
+              justify="evenly"
             >
               <MyCustomButton
-                label="버튼"
-                onPress={() => {}}
+                label="메모저장"
+                onPress={() => {
+                  onAddCustomInput({ myinput, multi_input });
+                }}
                 color="#8adea9ff"
                 size="medium"
               />
