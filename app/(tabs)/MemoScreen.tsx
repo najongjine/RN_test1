@@ -1,3 +1,4 @@
+import MyCustomButton from "@/components/Button/MyCustomButton";
 import { Label } from "@react-navigation/elements";
 import { useFocusEffect } from "expo-router";
 import { useCallback, useState } from "react";
@@ -89,6 +90,15 @@ export default function MemoScreen() {
                   </Text>
                 )}
               </Pressable>
+            </View>
+            <View>
+              <MyCustomButton
+                label="버튼"
+                onPress={() => {}}
+                color="#8adea9ff"
+                align="right"
+                size="small"
+              />
             </View>
             <View style={{ marginTop: 20 }}>
               <Text> 내가 지금까지 입력한것들: </Text>
