@@ -46,21 +46,21 @@ export default function MemoEditScreen() {
         </Text>
 
         <View style={styles.fieldGroup}>
-          <Text style={styles.label}>{"\uC81C\uBAA9"}</Text>
+          <Text style={styles.label}>{"제목"}</Text>
           <TextInput
             value={title}
             onChangeText={setTitle}
-            placeholder={"\uC81C\uBAA9\uC744 \uC785\uB825\uD558\uC138\uC694"}
+            placeholder={"제목입력"}
             style={styles.titleInput}
           />
         </View>
 
         <View style={styles.fieldGroup}>
-          <Text style={styles.label}>{"\uB0B4\uC6A9"}</Text>
+          <Text style={styles.label}>{"내용"}</Text>
           <MultilineMemoInput
             value={content}
             onChangeText={setContent}
-            placeholder={"\uB0B4\uC6A9\uC744 \uC785\uB825\uD558\uC138\uC694"}
+            placeholder={"내용입력"}
             minLines={8}
             maxLines={16}
             onRequestScrollBy={handleInputScrollRequest}

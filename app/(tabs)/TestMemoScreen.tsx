@@ -69,11 +69,11 @@ export default function TestMemoScreen() {
             <Text style={styles.title}>{"\uBA54\uBAA8 \uD654\uBA74"}</Text>
 
             <View style={styles.fieldGroup}>
-              <Label>{"\uC785\uB825"}</Label>
+              <Label>{"입력"}</Label>
               <TextInput
                 onChangeText={setMyinput}
                 value={myinput}
-                placeholder={"\uC785\uB825\uD574\uBCF4\uC138\uC694"}
+                placeholder={"입력해보세요"}
                 style={styles.singleLineInput}
               />
             </View>
@@ -81,11 +81,11 @@ export default function TestMemoScreen() {
             <Text style={styles.previewText}>my input: {myinput}</Text>
 
             <View style={styles.fieldGroup}>
-              <Label>{"\uC5EC\uB7EC \uC904 \uC785\uB825"}</Label>
+              <Label>{"내용"}</Label>
               <MultilineMemoInput
                 value={multiInput}
                 onChangeText={setMultiInput}
-                placeholder={"\uAE38\uAC8C \uC785\uB825\uD574\uB3C4 \uCEE4\uC11C \uC704\uCE58\uAC00 \uBCF4\uC774\uAC8C \uCC98\uB9AC\uD569\uB2C8\uB2E4"}
+                placeholder={"내용입력"}
                 minLines={4}
                 maxLines={12}
                 maxLength={400}
@@ -130,12 +130,24 @@ export default function TestMemoScreen() {
               fullWidth
             >
               <MyButtonGroup direction="row" gap={8}>
-                <MyCustomButton label={"Button 1"} onPress={() => {}} size="small" />
+                <MyCustomButton
+                  label={"Button 1"}
+                  onPress={() => {}}
+                  size="small"
+                />
               </MyButtonGroup>
 
               <MyButtonGroup direction="row" gap={8}>
-                <MyCustomButton label={"Button 2"} onPress={() => {}} size="small" />
-                <MyCustomButton label={"Button 3"} onPress={() => {}} size="small" />
+                <MyCustomButton
+                  label={"Button 2"}
+                  onPress={() => {}}
+                  size="small"
+                />
+                <MyCustomButton
+                  label={"Button 3"}
+                  onPress={() => {}}
+                  size="small"
+                />
               </MyButtonGroup>
             </MyButtonGroup>
 
