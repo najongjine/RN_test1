@@ -30,222 +30,241 @@ interface KeyboardAwareMultilineInputProps
   onRequestScrollBy?: (delta: number) => void;
 }
 
-interface KeyboardFrame {
-  screenY: number;
-}
-
 function clamp(value: number, min: number, max: number) {
   return Math.min(Math.max(value, min), max);
 }
 
+const CHANGE_EPSILON = 1;
+
 const KeyboardAwareMultilineInput = forwardRef<TextInput, KeyboardAwareMultilineInputProps>(
-function KeyboardAwareMultilineInput(
-  {
-    minLines = 4,
-    maxLines,
-    bottomSpacing = 16,
-    containerStyle,
-    inputStyle,
-    onRequestScrollBy,
-    onFocus,
-    onBlur,
-    onContentSizeChange,
-    scrollEnabled,
-    numberOfLines,
-    ...props
-  },
-  forwardedRef,
-) {
-  const innerRef = useRef<TextInput>(null);
-  const containerRef = useRef<View>(null);
-  const { height: windowHeight } = useWindowDimensions();
-  const insets = useSafeAreaInsets();
+  function KeyboardAwareMultilineInput(
+    {
+      minLines = 4,
+      maxLines,
+      bottomSpacing = 16,
+      containerStyle,
+      inputStyle,
+      onRequestScrollBy,
+      onFocus,
+      onBlur,
+      onContentSizeChange,
+      scrollEnabled,
+      numberOfLines,
+      ...props
+    },
+    forwardedRef,
+  ) {
+    const innerRef = useRef<TextInput>(null);
+    const containerRef = useRef<View>(null);
+    const { height: windowHeight } = useWindowDimensions();
+    const insets = useSafeAreaInsets();
 
-  const [contentHeight, setContentHeight] = useState(0);
-  const [containerY, setContainerY] = useState<number | null>(null);
-  const [keyboardFrame, setKeyboardFrame] = useState<KeyboardFrame | null>(null);
-  const keyboardFrameRef = useRef<KeyboardFrame | null>(null);
-  const keyboardAnchorYRef = useRef<number | null>(null);
-  const focusedRef = useRef(false);
-  const lastMeasuredYRef = useRef<number | null>(null);
+    const focusedRef = useRef(false);
+    const keyboardScreenYRef = useRef<number | null>(null);
+    const anchorYRef = useRef<number | null>(null);
+    const contentHeightRef = useRef(0);
+    const resolvedHeightRef = useRef(0);
 
-  useImperativeHandle(forwardedRef, () => innerRef.current as TextInput);
+    useImperativeHandle(forwardedRef, () => innerRef.current as TextInput);
 
-  const flattenedInputStyle = StyleSheet.flatten(inputStyle) ?? {};
-  const lineHeight =
-    typeof flattenedInputStyle.lineHeight === "number"
-      ? flattenedInputStyle.lineHeight
-      : 22;
-  const paddingTop =
-    typeof flattenedInputStyle.paddingTop === "number"
-      ? flattenedInputStyle.paddingTop
-      : typeof flattenedInputStyle.paddingVertical === "number"
-        ? flattenedInputStyle.paddingVertical
-        : 12;
-  const paddingBottom =
-    typeof flattenedInputStyle.paddingBottom === "number"
-      ? flattenedInputStyle.paddingBottom
-      : typeof flattenedInputStyle.paddingVertical === "number"
-        ? flattenedInputStyle.paddingVertical
-        : 12;
+    const flattenedInputStyle = StyleSheet.flatten(inputStyle) ?? {};
+    const lineHeight =
+      typeof flattenedInputStyle.lineHeight === "number"
+        ? flattenedInputStyle.lineHeight
+        : 22;
+    const paddingTop =
+      typeof flattenedInputStyle.paddingTop === "number"
+        ? flattenedInputStyle.paddingTop
+        : typeof flattenedInputStyle.paddingVertical === "number"
+          ? flattenedInputStyle.paddingVertical
+          : 12;
+    const paddingBottom =
+      typeof flattenedInputStyle.paddingBottom === "number"
+        ? flattenedInputStyle.paddingBottom
+        : typeof flattenedInputStyle.paddingVertical === "number"
+          ? flattenedInputStyle.paddingVertical
+          : 12;
 
-  const minHeight = minLines * lineHeight + paddingTop + paddingBottom;
-  const maxHeightFromLines = maxLines
-    ? maxLines * lineHeight + paddingTop + paddingBottom
-    : Number.POSITIVE_INFINITY;
-  const idealHeight = Math.max(contentHeight || 0, minHeight);
+    const minHeight = minLines * lineHeight + paddingTop + paddingBottom;
+    const maxHeightFromLines = maxLines
+      ? maxLines * lineHeight + paddingTop + paddingBottom
+      : Number.POSITIVE_INFINITY;
 
-  function updateMeasuredY(nextY: number) {
-    if (
-      lastMeasuredYRef.current === null ||
-      Math.abs(lastMeasuredYRef.current - nextY) > 1
-    ) {
-      lastMeasuredYRef.current = nextY;
-      setContainerY(nextY);
-    }
-  }
+    const [contentHeight, setContentHeight] = useState(minHeight);
+    const [resolvedHeight, setResolvedHeight] = useState(minHeight);
 
-  const getResolvedHeight = useCallback((
-    nextContainerY: number | null,
-    keyboardScreenY = keyboardFrameRef.current?.screenY,
-  ) => {
-    const effectiveContainerY =
-      keyboardScreenY !== undefined && keyboardAnchorYRef.current !== null
-        ? keyboardAnchorYRef.current
-        : nextContainerY;
+    const getIdealHeight = useCallback(() => {
+      return Math.max(contentHeightRef.current || minHeight, minHeight);
+    }, [minHeight]);
 
-    if (effectiveContainerY === null) {
-      return clamp(idealHeight, minHeight, maxHeightFromLines);
-    }
+    const updateResolvedHeight = useCallback(
+      (nextHeight: number) => {
+        if (Math.abs(resolvedHeightRef.current - nextHeight) <= CHANGE_EPSILON) {
+          return;
+        }
 
-    const keyboardTop = keyboardScreenY ?? windowHeight - insets.bottom;
-    const availableHeight = keyboardTop - effectiveContainerY - bottomSpacing;
+        resolvedHeightRef.current = nextHeight;
+        setResolvedHeight(nextHeight);
+      },
+      [],
+    );
 
-    return clamp(idealHeight, minHeight, Math.min(availableHeight, maxHeightFromLines));
-  }, [bottomSpacing, idealHeight, insets.bottom, maxHeightFromLines, minHeight, windowHeight]);
+    const resetToContentHeight = useCallback(() => {
+      const nextHeight = clamp(getIdealHeight(), minHeight, maxHeightFromLines);
+      updateResolvedHeight(nextHeight);
+    }, [getIdealHeight, maxHeightFromLines, minHeight, updateResolvedHeight]);
 
-  const syncLayout = useCallback((
-    shouldRequestParentScroll = false,
-    keyboardScreenY = keyboardFrameRef.current?.screenY,
-  ) => {
-    if (!containerRef.current?.measureInWindow) {
-      return;
-    }
+    const recalculateLayout = useCallback(
+      (shouldRequestParentScroll = false) => {
+        if (!containerRef.current?.measureInWindow) {
+          resetToContentHeight();
+          return;
+        }
 
-    containerRef.current.measureInWindow((_, measuredY) => {
-      updateMeasuredY(measuredY);
+        containerRef.current.measureInWindow((_, measuredY) => {
+          const keyboardScreenY = keyboardScreenYRef.current;
+          const keyboardVisible = keyboardScreenY !== null;
 
-      if (keyboardScreenY !== undefined && keyboardAnchorYRef.current === null) {
-        keyboardAnchorYRef.current = measuredY;
-      }
+          if (!keyboardVisible) {
+            anchorYRef.current = null;
+            resetToContentHeight();
+            return;
+          }
 
-      if (!shouldRequestParentScroll || !focusedRef.current || !onRequestScrollBy) {
+          const anchorY =
+            anchorYRef.current === null ? measuredY : anchorYRef.current;
+          anchorYRef.current = anchorY;
+
+          const availableHeight = keyboardScreenY - anchorY - bottomSpacing;
+          const nextHeight = clamp(
+            getIdealHeight(),
+            minHeight,
+            Math.min(availableHeight, maxHeightFromLines),
+          );
+
+          updateResolvedHeight(nextHeight);
+
+          if (!shouldRequestParentScroll || !focusedRef.current || !onRequestScrollBy) {
+            return;
+          }
+
+          const overlap = measuredY + nextHeight + bottomSpacing - keyboardScreenY;
+
+          if (overlap > CHANGE_EPSILON) {
+            onRequestScrollBy(overlap);
+          }
+        });
+      },
+      [
+        bottomSpacing,
+        getIdealHeight,
+        maxHeightFromLines,
+        minHeight,
+        onRequestScrollBy,
+        resetToContentHeight,
+        updateResolvedHeight,
+      ],
+    );
+
+    useEffect(() => {
+      const showEvent = Platform.OS === "ios" ? "keyboardDidShow" : "keyboardDidShow";
+      const hideEvent = Platform.OS === "ios" ? "keyboardDidHide" : "keyboardDidHide";
+
+      const showSubscription = Keyboard.addListener(showEvent, (event) => {
+        keyboardScreenYRef.current = event.endCoordinates.screenY;
+        anchorYRef.current = null;
+        requestAnimationFrame(() => {
+          recalculateLayout(true);
+        });
+      });
+
+      const hideSubscription = Keyboard.addListener(hideEvent, () => {
+        keyboardScreenYRef.current = null;
+        anchorYRef.current = null;
+        resetToContentHeight();
+      });
+
+      return () => {
+        showSubscription.remove();
+        hideSubscription.remove();
+      };
+    }, [recalculateLayout, resetToContentHeight]);
+
+    useEffect(() => {
+      const fallbackKeyboardTop =
+        keyboardScreenYRef.current ?? windowHeight - insets.bottom;
+
+      if (keyboardScreenYRef.current !== null) {
+        keyboardScreenYRef.current = fallbackKeyboardTop;
+        recalculateLayout(false);
         return;
       }
 
-      const keyboardTop = keyboardScreenY ?? windowHeight - insets.bottom;
-      const nextHeight = getResolvedHeight(measuredY, keyboardScreenY);
-      const overlap = measuredY + nextHeight + bottomSpacing - keyboardTop;
+      resetToContentHeight();
+    }, [insets.bottom, recalculateLayout, resetToContentHeight, windowHeight]);
 
-      if (overlap > 1) {
-        onRequestScrollBy(overlap);
-      }
-    });
-  }, [bottomSpacing, getResolvedHeight, insets.bottom, onRequestScrollBy, windowHeight]);
+    const shouldEnableInnerScroll = contentHeight > resolvedHeight + CHANGE_EPSILON;
 
-  useEffect(() => {
-    const showEvent = Platform.OS === "ios" ? "keyboardWillShow" : "keyboardDidShow";
-    const hideEvent = Platform.OS === "ios" ? "keyboardWillHide" : "keyboardDidHide";
-
-    const showSubscription = Keyboard.addListener(showEvent, (event) => {
-      const nextKeyboardFrame = { screenY: event.endCoordinates.screenY };
-
-      keyboardFrameRef.current = nextKeyboardFrame;
-      keyboardAnchorYRef.current = null;
-      setKeyboardFrame(nextKeyboardFrame);
-      requestAnimationFrame(() => {
-        syncLayout(true, nextKeyboardFrame.screenY);
-      });
-    });
-
-    const hideSubscription = Keyboard.addListener(hideEvent, () => {
-      keyboardFrameRef.current = null;
-      keyboardAnchorYRef.current = null;
-      setKeyboardFrame(null);
-      requestAnimationFrame(() => {
-        syncLayout(false);
-      });
-    });
-
-    return () => {
-      showSubscription.remove();
-      hideSubscription.remove();
-    };
-  }, [syncLayout]);
-
-  useEffect(() => {
-    requestAnimationFrame(() => {
-      syncLayout(false);
-    });
-  }, [contentHeight, syncLayout, windowHeight]);
-
-  const resolvedHeight = getResolvedHeight(containerY, keyboardFrame?.screenY);
-  const shouldEnableInnerScroll = idealHeight > resolvedHeight + 1;
-
-  return (
-    <View
-      ref={containerRef}
-      onLayout={() => {
-        requestAnimationFrame(() => {
-          syncLayout(false);
-        });
-      }}
-      style={[
-        styles.container,
-        containerStyle,
-        { minHeight: resolvedHeight, height: resolvedHeight },
-      ]}
-    >
-      <TextInput
-        {...props}
-        ref={innerRef}
-        multiline
-        numberOfLines={numberOfLines ?? minLines}
-        onFocus={(event) => {
-          focusedRef.current = true;
-          keyboardAnchorYRef.current = null;
-          requestAnimationFrame(() => {
-            syncLayout(true);
-          });
-          onFocus?.(event);
-        }}
-        onBlur={(event) => {
-          focusedRef.current = false;
-          keyboardAnchorYRef.current = null;
-          onBlur?.(event);
-        }}
-        onContentSizeChange={(event) => {
-          setContentHeight(event.nativeEvent.contentSize.height + paddingTop + paddingBottom);
-          requestAnimationFrame(() => {
-            syncLayout(focusedRef.current);
-          });
-          onContentSizeChange?.(event);
-        }}
-        scrollEnabled={scrollEnabled ?? shouldEnableInnerScroll}
-        textAlignVertical="top"
+    return (
+      <View
+        ref={containerRef}
         style={[
-          styles.input,
-          {
-            lineHeight,
-            paddingTop,
-            paddingBottom,
-          },
-          inputStyle,
+          styles.container,
+          containerStyle,
+          { minHeight: resolvedHeight, height: resolvedHeight },
         ]}
-      />
-    </View>
-  );
-});
+      >
+        <TextInput
+          {...props}
+          ref={innerRef}
+          multiline
+          numberOfLines={numberOfLines ?? minLines}
+          onFocus={(event) => {
+            focusedRef.current = true;
+            anchorYRef.current = null;
+            requestAnimationFrame(() => {
+              recalculateLayout(true);
+            });
+            onFocus?.(event);
+          }}
+          onBlur={(event) => {
+            focusedRef.current = false;
+            anchorYRef.current = null;
+            onBlur?.(event);
+          }}
+          onContentSizeChange={(event) => {
+            const nextContentHeight =
+              event.nativeEvent.contentSize.height + paddingTop + paddingBottom;
+
+            if (Math.abs(contentHeightRef.current - nextContentHeight) > CHANGE_EPSILON) {
+              contentHeightRef.current = nextContentHeight;
+              setContentHeight(nextContentHeight);
+            }
+
+            if (keyboardScreenYRef.current !== null) {
+              recalculateLayout(focusedRef.current);
+            } else {
+              resetToContentHeight();
+            }
+
+            onContentSizeChange?.(event);
+          }}
+          scrollEnabled={scrollEnabled ?? shouldEnableInnerScroll}
+          textAlignVertical="top"
+          style={[
+            styles.input,
+            {
+              lineHeight,
+              paddingTop,
+              paddingBottom,
+            },
+            inputStyle,
+          ]}
+        />
+      </View>
+    );
+  },
+);
 
 const styles = StyleSheet.create({
   container: {
