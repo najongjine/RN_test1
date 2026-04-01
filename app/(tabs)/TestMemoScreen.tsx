@@ -1,9 +1,18 @@
 import MyButtonGroup from "@/components/Button/MyButtonGroup";
 import MyCustomButton from "@/components/Button/MyCustomButton";
+import MultilineMemoInput from "@/components/Input/KeyboardAwareMultilineInput";
 import { Label } from "@react-navigation/elements";
 import { useFocusEffect } from "expo-router";
-import { useCallback, useState } from "react";
-import { FlatList, StyleSheet, Text, TextInput, View } from "react-native";
+import { useCallback, useRef, useState } from "react";
+import {
+  FlatList,
+  NativeScrollEvent,
+  NativeSyntheticEvent,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 interface MyInputsType {
@@ -12,57 +21,77 @@ interface MyInputsType {
 }
 
 export default function TestMemoScreen() {
-  const [myinput, set_myinput] = useState("");
-  const [multi_input, set_multi_input] = useState("");
-  const [custom_inputs, set_custom_inputs] = useState<MyInputsType[]>([]);
+  const [myinput, setMyinput] = useState("");
+  const [multiInput, setMultiInput] = useState("");
+  const [customInputs, setCustomInputs] = useState<MyInputsType[]>([]);
+
+  const listRef = useRef<FlatList<MyInputsType>>(null);
+  const scrollOffsetRef = useRef(0);
 
   useFocusEffect(
     useCallback(() => {
-      // 1. 화면이 포커스(진입) 되었을 때 실행할 로직
-
       return () => {
-        // 2. 화면이 포커스를 잃었을 때(나갈 때) 실행할 정리(Cleanup) 로직
-        console.log("화면에서 나갔습니다.");
+        console.log("TestMemoScreen cleanup");
       };
     }, []),
   );
 
-  function onAddCustomInput(e: MyInputsType) {
-    set_custom_inputs([...custom_inputs, e]);
-    console.log(`# custom_inputs: `, custom_inputs);
+  function onAddCustomInput(nextInput: MyInputsType) {
+    setCustomInputs((currentInputs) => [...currentInputs, nextInput]);
+  }
+
+  function handleListScroll(event: NativeSyntheticEvent<NativeScrollEvent>) {
+    scrollOffsetRef.current = event.nativeEvent.contentOffset.y;
+  }
+
+  function handleInputScrollRequest(delta: number) {
+    const nextOffset = Math.max(0, scrollOffsetRef.current + delta);
+
+    scrollOffsetRef.current = nextOffset;
+    listRef.current?.scrollToOffset({
+      offset: nextOffset,
+      animated: true,
+    });
   }
 
   return (
-    <SafeAreaView style={{ flex: 1 }}>
+    <SafeAreaView style={styles.safeArea}>
       <FlatList
-        data={custom_inputs}
+        ref={listRef}
+        data={customInputs}
         keyExtractor={(_, index) => index.toString()}
+        keyboardShouldPersistTaps="handled"
+        scrollEventThrottle={16}
+        onScroll={handleListScroll}
+        contentContainerStyle={styles.listContent}
         ListHeaderComponent={
           <>
-            <Text>메모 화면</Text>
-            <View>
-              <Label>입력:</Label>
+            <Text style={styles.title}>{"\uBA54\uBAA8 \uD654\uBA74"}</Text>
+
+            <View style={styles.fieldGroup}>
+              <Label>{"\uC785\uB825"}</Label>
               <TextInput
-                onChangeText={(e: string) => {
-                  set_myinput(e);
-                }}
+                onChangeText={setMyinput}
                 value={myinput}
-                placeholder="입력하는곳"
+                placeholder={"\uC785\uB825\uD574\uBCF4\uC138\uC694"}
+                style={styles.singleLineInput}
               />
             </View>
-            <Text>my input: {myinput}</Text>
-            <View>
-              <TextInput
-                editable
-                multiline
-                numberOfLines={4}
-                maxLength={40}
-                onChangeText={(e: string) => {
-                  set_multi_input(e);
-                }}
-                value={multi_input}
-                placeholder="여러줄 입력란"
-                style={styles.textInput}
+
+            <Text style={styles.previewText}>my input: {myinput}</Text>
+
+            <View style={styles.fieldGroup}>
+              <Label>{"\uC5EC\uB7EC \uC904 \uC785\uB825"}</Label>
+              <MultilineMemoInput
+                value={multiInput}
+                onChangeText={setMultiInput}
+                placeholder={"\uAE38\uAC8C \uC785\uB825\uD574\uB3C4 \uCEE4\uC11C \uC704\uCE58\uAC00 \uBCF4\uC774\uAC8C \uCC98\uB9AC\uD569\uB2C8\uB2E4"}
+                minLines={4}
+                maxLines={12}
+                maxLength={400}
+                onRequestScrollBy={handleInputScrollRequest}
+                containerStyle={styles.multilineContainer}
+                inputStyle={styles.multilineInput}
               />
             </View>
 
@@ -73,26 +102,27 @@ export default function TestMemoScreen() {
               justify="evenly"
             >
               <MyCustomButton
-                label="메모저장"
+                label={"\uBA54\uBAA8 \uCD94\uAC00"}
                 onPress={() => {
-                  onAddCustomInput({ myinput, multi_input });
+                  onAddCustomInput({ myinput, multi_input: multiInput });
                 }}
                 color="#8adea9ff"
                 size="medium"
               />
               <MyCustomButton
-                label="버튼2"
+                label={"Button 2"}
                 onPress={() => {}}
                 color="#8adea9ff"
                 size="small"
               />
               <MyCustomButton
-                label="버3"
+                label={"Button 3"}
                 onPress={() => {}}
                 color="#8adea9ff"
                 size="small"
               />
             </MyButtonGroup>
+
             <MyButtonGroup
               direction="row"
               justify="between"
@@ -100,43 +130,81 @@ export default function TestMemoScreen() {
               fullWidth
             >
               <MyButtonGroup direction="row" gap={8}>
-                <MyCustomButton label="버튼1" onPress={() => {}} size="small" />
+                <MyCustomButton label={"Button 1"} onPress={() => {}} size="small" />
               </MyButtonGroup>
 
               <MyButtonGroup direction="row" gap={8}>
-                <MyCustomButton label="버튼2" onPress={() => {}} size="small" />
-                <MyCustomButton label="버튼3" onPress={() => {}} size="small" />
+                <MyCustomButton label={"Button 2"} onPress={() => {}} size="small" />
+                <MyCustomButton label={"Button 3"} onPress={() => {}} size="small" />
               </MyButtonGroup>
             </MyButtonGroup>
-            <View style={{ marginTop: 20 }}>
-              <Text> 내가 지금까지 입력한것들: </Text>
+
+            <View style={styles.sectionGap}>
+              <Text>{"\uC785\uB825\uD55C \uBA54\uBAA8 \uBAA9\uB85D"}</Text>
             </View>
           </>
         }
         renderItem={({ item }) => (
-          <View style={{ paddingHorizontal: 10 }}>
+          <View style={styles.listItem}>
             <Text>myinput: {item.myinput}</Text>
             <Text>multi_input: {item.multi_input}</Text>
-            <View
-              style={{
-                height: 1,
-                backgroundColor: "#cccccc",
-                marginVertical: 10,
-              }}
-            />
+            <View style={styles.separator} />
           </View>
         )}
-        contentContainerStyle={{ padding: 10 }}
       />
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  textInput: {
+  safeArea: {
+    flex: 1,
+  },
+  listContent: {
     padding: 10,
-    borderColor: "#000",
+    gap: 12,
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: "700",
+    color: "#111827",
+    marginBottom: 8,
+  },
+  fieldGroup: {
+    gap: 8,
+    marginBottom: 12,
+  },
+  singleLineInput: {
     borderWidth: 1,
-    margin: 12,
+    borderColor: "#000",
+    borderRadius: 12,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+  },
+  previewText: {
+    marginBottom: 12,
+  },
+  multilineContainer: {
+    borderWidth: 1,
+    borderColor: "#000",
+    borderRadius: 12,
+    backgroundColor: "#fff",
+  },
+  multilineInput: {
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    fontSize: 16,
+    lineHeight: 22,
+  },
+  sectionGap: {
+    marginTop: 20,
+  },
+  listItem: {
+    paddingHorizontal: 10,
+  },
+  separator: {
+    height: 1,
+    backgroundColor: "#cccccc",
+    marginVertical: 10,
   },
 });
