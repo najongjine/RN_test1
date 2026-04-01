@@ -66,7 +66,7 @@ export default function TestMemoScreen() {
         contentContainerStyle={styles.listContent}
         ListHeaderComponent={
           <>
-            <Text style={styles.title}>{"\uBA54\uBAA8 \uD654\uBA74"}</Text>
+            <Text style={styles.title}>{"메모화면"}</Text>
 
             <View style={styles.fieldGroup}>
               <Label>{"입력"}</Label>
