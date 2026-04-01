@@ -11,7 +11,7 @@ interface MyInputsType {
   multi_input?: string;
 }
 
-export default function MemoScreen() {
+export default function TestMemoScreen() {
   const [myinput, set_myinput] = useState("");
   const [multi_input, set_multi_input] = useState("");
   const [custom_inputs, set_custom_inputs] = useState<MyInputsType[]>([]);
