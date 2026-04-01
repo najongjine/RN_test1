@@ -191,11 +191,11 @@ const KeyboardAwareMultilineInput = forwardRef<TextInput, KeyboardAwareMultiline
     }, [recalculateLayout, resetToContentHeight]);
 
     useEffect(() => {
-      const fallbackKeyboardTop =
-        keyboardScreenYRef.current ?? windowHeight - insets.bottom;
+      if (Platform.OS === "ios") {
+        return;
+      }
 
       if (keyboardScreenYRef.current !== null) {
-        keyboardScreenYRef.current = fallbackKeyboardTop;
         recalculateLayout(false);
         return;
       }
@@ -203,7 +203,10 @@ const KeyboardAwareMultilineInput = forwardRef<TextInput, KeyboardAwareMultiline
       resetToContentHeight();
     }, [insets.bottom, recalculateLayout, resetToContentHeight, windowHeight]);
 
-    const shouldEnableInnerScroll = contentHeight > resolvedHeight + CHANGE_EPSILON;
+    const shouldEnableInnerScroll =
+      Platform.OS === "ios"
+        ? true
+        : contentHeight > resolvedHeight + CHANGE_EPSILON;
 
     return (
       <View
@@ -233,23 +236,18 @@ const KeyboardAwareMultilineInput = forwardRef<TextInput, KeyboardAwareMultiline
             onBlur?.(event);
           }}
           onContentSizeChange={(event) => {
-            const nextContentHeight =
-              event.nativeEvent.contentSize.height + paddingTop + paddingBottom;
+            const nextContentHeight = event.nativeEvent.contentSize.height;
 
             if (Math.abs(contentHeightRef.current - nextContentHeight) > CHANGE_EPSILON) {
               contentHeightRef.current = nextContentHeight;
               setContentHeight(nextContentHeight);
             }
 
-            if (keyboardScreenYRef.current !== null) {
-              recalculateLayout(focusedRef.current);
-            } else {
-              resetToContentHeight();
-            }
+            resetToContentHeight();
 
             onContentSizeChange?.(event);
           }}
-          scrollEnabled={scrollEnabled ?? shouldEnableInnerScroll}
+          scrollEnabled={scrollEnabled ?? (Platform.OS === "ios" ? true : shouldEnableInnerScroll)}
           textAlignVertical="top"
           style={[
             styles.input,

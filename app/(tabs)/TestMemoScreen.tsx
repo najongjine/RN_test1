@@ -6,8 +6,10 @@ import { useFocusEffect } from "expo-router";
 import { useCallback, useRef, useState } from "react";
 import {
   FlatList,
+  KeyboardAvoidingView,
   NativeScrollEvent,
   NativeSyntheticEvent,
+  Platform,
   StyleSheet,
   Text,
   TextInput,
@@ -50,120 +52,125 @@ export default function TestMemoScreen() {
     scrollOffsetRef.current = nextOffset;
     listRef.current?.scrollToOffset({
       offset: nextOffset,
-      animated: true,
+      animated: false,
     });
   }
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <FlatList
-        ref={listRef}
-        data={customInputs}
-        keyExtractor={(_, index) => index.toString()}
-        keyboardShouldPersistTaps="handled"
-        scrollEventThrottle={16}
-        onScroll={handleListScroll}
-        contentContainerStyle={styles.listContent}
-        ListHeaderComponent={
-          <>
-            <Text style={styles.title}>{"메모화면"}</Text>
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+      >
+        <FlatList
+          ref={listRef}
+          data={customInputs}
+          keyExtractor={(_, index) => index.toString()}
+          keyboardShouldPersistTaps="handled"
+          scrollEventThrottle={16}
+          onScroll={handleListScroll}
+          contentContainerStyle={styles.listContent}
+          ListHeaderComponent={
+            <>
+              <Text style={styles.title}>{"메모화면"}</Text>
 
-            <View style={styles.fieldGroup}>
-              <Label>{"입력"}</Label>
-              <TextInput
-                onChangeText={setMyinput}
-                value={myinput}
-                placeholder={"입력해보세요"}
-                style={styles.singleLineInput}
-              />
-            </View>
-
-            <Text style={styles.previewText}>my input: {myinput}</Text>
-
-            <View style={styles.fieldGroup}>
-              <Label>{"내용"}</Label>
-              <MultilineMemoInput
-                value={multiInput}
-                onChangeText={setMultiInput}
-                placeholder={"내용입력"}
-                minLines={4}
-                maxLines={12}
-                maxLength={400}
-                onRequestScrollBy={handleInputScrollRequest}
-                containerStyle={styles.multilineContainer}
-                inputStyle={styles.multilineInput}
-              />
-            </View>
-
-            <MyButtonGroup
-              direction="row"
-              align="center"
-              gap={5}
-              justify="evenly"
-            >
-              <MyCustomButton
-                label={"\uBA54\uBAA8 \uCD94\uAC00"}
-                onPress={() => {
-                  onAddCustomInput({ myinput, multi_input: multiInput });
-                }}
-                color="#8adea9ff"
-                size="medium"
-              />
-              <MyCustomButton
-                label={"Button 2"}
-                onPress={() => {}}
-                color="#8adea9ff"
-                size="small"
-              />
-              <MyCustomButton
-                label={"Button 3"}
-                onPress={() => {}}
-                color="#8adea9ff"
-                size="small"
-              />
-            </MyButtonGroup>
-
-            <MyButtonGroup
-              direction="row"
-              justify="between"
-              align="center"
-              fullWidth
-            >
-              <MyButtonGroup direction="row" gap={8}>
-                <MyCustomButton
-                  label={"Button 1"}
-                  onPress={() => {}}
-                  size="small"
+              <View style={styles.fieldGroup}>
+                <Label>{"입력"}</Label>
+                <TextInput
+                  onChangeText={setMyinput}
+                  value={myinput}
+                  placeholder={"입력해보세요"}
+                  style={styles.singleLineInput}
                 />
-              </MyButtonGroup>
+              </View>
 
-              <MyButtonGroup direction="row" gap={8}>
+              <Text style={styles.previewText}>my input: {myinput}</Text>
+
+              <View style={styles.fieldGroup}>
+                <Label>{"내용"}</Label>
+                <MultilineMemoInput
+                  value={multiInput}
+                  onChangeText={setMultiInput}
+                  placeholder={"내용입력"}
+                  minLines={4}
+                  maxLines={12}
+                  maxLength={400}
+                  onRequestScrollBy={handleInputScrollRequest}
+                  containerStyle={styles.multilineContainer}
+                  inputStyle={styles.multilineInput}
+                />
+              </View>
+
+              <MyButtonGroup
+                direction="row"
+                align="center"
+                gap={5}
+                justify="evenly"
+              >
+                <MyCustomButton
+                  label={"\uBA54\uBAA8 \uCD94\uAC00"}
+                  onPress={() => {
+                    onAddCustomInput({ myinput, multi_input: multiInput });
+                  }}
+                  color="#8adea9ff"
+                  size="medium"
+                />
                 <MyCustomButton
                   label={"Button 2"}
-                  onPress={() => {}}
+                  onPress={() => { }}
+                  color="#8adea9ff"
                   size="small"
                 />
                 <MyCustomButton
                   label={"Button 3"}
-                  onPress={() => {}}
+                  onPress={() => { }}
+                  color="#8adea9ff"
                   size="small"
                 />
               </MyButtonGroup>
-            </MyButtonGroup>
 
-            <View style={styles.sectionGap}>
-              <Text>{"\uC785\uB825\uD55C \uBA54\uBAA8 \uBAA9\uB85D"}</Text>
+              <MyButtonGroup
+                direction="row"
+                justify="between"
+                align="center"
+                fullWidth
+              >
+                <MyButtonGroup direction="row" gap={8}>
+                  <MyCustomButton
+                    label={"Button 1"}
+                    onPress={() => { }}
+                    size="small"
+                  />
+                </MyButtonGroup>
+
+                <MyButtonGroup direction="row" gap={8}>
+                  <MyCustomButton
+                    label={"Button 2"}
+                    onPress={() => { }}
+                    size="small"
+                  />
+                  <MyCustomButton
+                    label={"Button 3"}
+                    onPress={() => { }}
+                    size="small"
+                  />
+                </MyButtonGroup>
+              </MyButtonGroup>
+
+              <View style={styles.sectionGap}>
+                <Text>{"\uC785\uB825\uD55C \uBA54\uBAA8 \uBAA9\uB85D"}</Text>
+              </View>
+            </>
+          }
+          renderItem={({ item }) => (
+            <View style={styles.listItem}>
+              <Text>myinput: {item.myinput}</Text>
+              <Text>multi_input: {item.multi_input}</Text>
+              <View style={styles.separator} />
             </View>
-          </>
-        }
-        renderItem={({ item }) => (
-          <View style={styles.listItem}>
-            <Text>myinput: {item.myinput}</Text>
-            <Text>multi_input: {item.multi_input}</Text>
-            <View style={styles.separator} />
-          </View>
-        )}
-      />
+          )}
+        />
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 }

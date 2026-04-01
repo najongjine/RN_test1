@@ -1,8 +1,10 @@
 import MultilineMemoInput from "@/components/Input/KeyboardAwareMultilineInput";
 import { useRef, useState } from "react";
 import {
+  KeyboardAvoidingView,
   NativeScrollEvent,
   NativeSyntheticEvent,
+  Platform,
   ScrollView,
   StyleSheet,
   Text,
@@ -28,47 +30,52 @@ export default function MemoEditScreen() {
     scrollOffsetRef.current = nextOffset;
     scrollRef.current?.scrollTo({
       y: nextOffset,
-      animated: true,
+      animated: false,
     });
   }
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <ScrollView
-        ref={scrollRef}
-        keyboardShouldPersistTaps="handled"
-        scrollEventThrottle={16}
-        onScroll={handleScroll}
-        contentContainerStyle={styles.container}
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
       >
-        <Text style={styles.screenTitle}>
-          {"\uBA54\uBAA8 \uC218\uC815 \uD654\uBA74"}
-        </Text>
+        <ScrollView
+          ref={scrollRef}
+          keyboardShouldPersistTaps="handled"
+          scrollEventThrottle={16}
+          onScroll={handleScroll}
+          contentContainerStyle={styles.container}
+        >
+          <Text style={styles.screenTitle}>
+            {"\uBA54\uBAA8 \uC218\uC815 \uD654\uBA74"}
+          </Text>
 
-        <View style={styles.fieldGroup}>
-          <Text style={styles.label}>{"제목"}</Text>
-          <TextInput
-            value={title}
-            onChangeText={setTitle}
-            placeholder={"제목입력"}
-            style={styles.titleInput}
-          />
-        </View>
+          <View style={styles.fieldGroup}>
+            <Text style={styles.label}>{"제목"}</Text>
+            <TextInput
+              value={title}
+              onChangeText={setTitle}
+              placeholder={"제목입력"}
+              style={styles.titleInput}
+            />
+          </View>
 
-        <View style={styles.fieldGroup}>
-          <Text style={styles.label}>{"내용"}</Text>
-          <MultilineMemoInput
-            value={content}
-            onChangeText={setContent}
-            placeholder={"내용입력"}
-            minLines={8}
-            maxLines={16}
-            onRequestScrollBy={handleInputScrollRequest}
-            containerStyle={styles.contentContainer}
-            inputStyle={styles.contentInput}
-          />
-        </View>
-      </ScrollView>
+          <View style={styles.fieldGroup}>
+            <Text style={styles.label}>{"내용"}</Text>
+            <MultilineMemoInput
+              value={content}
+              onChangeText={setContent}
+              placeholder={"내용입력"}
+              minLines={8}
+              maxLines={16}
+              onRequestScrollBy={handleInputScrollRequest}
+              containerStyle={styles.contentContainer}
+              inputStyle={styles.contentInput}
+            />
+          </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 }
