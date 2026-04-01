@@ -65,7 +65,9 @@ function KeyboardAwareMultilineInput(
   const [containerY, setContainerY] = useState<number | null>(null);
   const [keyboardFrame, setKeyboardFrame] = useState<KeyboardFrame | null>(null);
   const keyboardFrameRef = useRef<KeyboardFrame | null>(null);
+  const keyboardAnchorYRef = useRef<number | null>(null);
   const focusedRef = useRef(false);
+  const lastMeasuredYRef = useRef<number | null>(null);
 
   useImperativeHandle(forwardedRef, () => innerRef.current as TextInput);
 
@@ -93,16 +95,31 @@ function KeyboardAwareMultilineInput(
     : Number.POSITIVE_INFINITY;
   const idealHeight = Math.max(contentHeight || 0, minHeight);
 
+  function updateMeasuredY(nextY: number) {
+    if (
+      lastMeasuredYRef.current === null ||
+      Math.abs(lastMeasuredYRef.current - nextY) > 1
+    ) {
+      lastMeasuredYRef.current = nextY;
+      setContainerY(nextY);
+    }
+  }
+
   const getResolvedHeight = useCallback((
     nextContainerY: number | null,
     keyboardScreenY = keyboardFrameRef.current?.screenY,
   ) => {
-    if (nextContainerY === null) {
+    const effectiveContainerY =
+      keyboardScreenY !== undefined && keyboardAnchorYRef.current !== null
+        ? keyboardAnchorYRef.current
+        : nextContainerY;
+
+    if (effectiveContainerY === null) {
       return clamp(idealHeight, minHeight, maxHeightFromLines);
     }
 
     const keyboardTop = keyboardScreenY ?? windowHeight - insets.bottom;
-    const availableHeight = keyboardTop - nextContainerY - bottomSpacing;
+    const availableHeight = keyboardTop - effectiveContainerY - bottomSpacing;
 
     return clamp(idealHeight, minHeight, Math.min(availableHeight, maxHeightFromLines));
   }, [bottomSpacing, idealHeight, insets.bottom, maxHeightFromLines, minHeight, windowHeight]);
@@ -116,7 +133,11 @@ function KeyboardAwareMultilineInput(
     }
 
     containerRef.current.measureInWindow((_, measuredY) => {
-      setContainerY(measuredY);
+      updateMeasuredY(measuredY);
+
+      if (keyboardScreenY !== undefined && keyboardAnchorYRef.current === null) {
+        keyboardAnchorYRef.current = measuredY;
+      }
 
       if (!shouldRequestParentScroll || !focusedRef.current || !onRequestScrollBy) {
         return;
@@ -140,6 +161,7 @@ function KeyboardAwareMultilineInput(
       const nextKeyboardFrame = { screenY: event.endCoordinates.screenY };
 
       keyboardFrameRef.current = nextKeyboardFrame;
+      keyboardAnchorYRef.current = null;
       setKeyboardFrame(nextKeyboardFrame);
       requestAnimationFrame(() => {
         syncLayout(true, nextKeyboardFrame.screenY);
@@ -148,6 +170,7 @@ function KeyboardAwareMultilineInput(
 
     const hideSubscription = Keyboard.addListener(hideEvent, () => {
       keyboardFrameRef.current = null;
+      keyboardAnchorYRef.current = null;
       setKeyboardFrame(null);
       requestAnimationFrame(() => {
         syncLayout(false);
@@ -190,6 +213,7 @@ function KeyboardAwareMultilineInput(
         numberOfLines={numberOfLines ?? minLines}
         onFocus={(event) => {
           focusedRef.current = true;
+          keyboardAnchorYRef.current = null;
           requestAnimationFrame(() => {
             syncLayout(true);
           });
@@ -197,6 +221,7 @@ function KeyboardAwareMultilineInput(
         }}
         onBlur={(event) => {
           focusedRef.current = false;
+          keyboardAnchorYRef.current = null;
           onBlur?.(event);
         }}
         onContentSizeChange={(event) => {
