@@ -1,6 +1,6 @@
 import MyButtonGroup from "@/components/Button/MyButtonGroup";
 import MyCustomButton from "@/components/Button/MyCustomButton";
-import MultilineMemoInput from "@/components/Input/KeyboardAwareMultilineInput";
+import MultilineMemoInput2 from "@/components/Input/KeyboardAwareMultilineInput2";
 import { Label } from "@react-navigation/elements";
 import { useFocusEffect } from "expo-router";
 import { useCallback, useRef, useState } from "react";
@@ -88,6 +88,7 @@ export default function TestMemoScreen() {
 
               <View style={styles.fieldGroup}>
                 <Label>{"내용"}</Label>
+                {/**
                 <MultilineMemoInput
                   value={multiInput}
                   onChangeText={setMultiInput}
@@ -96,6 +97,17 @@ export default function TestMemoScreen() {
                   maxLines={12}
                   maxLength={400}
                   onRequestScrollBy={handleInputScrollRequest}
+                  containerStyle={styles.multilineContainer}
+                  inputStyle={styles.multilineInput}
+                />
+                 */}
+                <MultilineMemoInput2
+                  value={multiInput}
+                  onChangeText={setMultiInput}
+                  placeholder="내용입력"
+                  minLines={4}
+                  maxLines={12}
+                  maxLength={400}
                   containerStyle={styles.multilineContainer}
                   inputStyle={styles.multilineInput}
                 />
