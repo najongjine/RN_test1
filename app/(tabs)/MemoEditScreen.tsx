@@ -1,4 +1,4 @@
-import MultilineMemoInput from "@/components/Input/KeyboardAwareMultilineInput";
+import MultilineMemoInput2 from "@/components/Input/KeyboardAwareMultilineInput2";
 import { useRef, useState } from "react";
 import {
   KeyboardAvoidingView,
@@ -63,13 +63,12 @@ export default function MemoEditScreen() {
 
           <View style={styles.fieldGroup}>
             <Text style={styles.label}>{"내용"}</Text>
-            <MultilineMemoInput
+            <MultilineMemoInput2
               value={content}
               onChangeText={setContent}
               placeholder={"내용입력"}
               minLines={8}
               maxLines={16}
-              onRequestScrollBy={handleInputScrollRequest}
               containerStyle={styles.contentContainer}
               inputStyle={styles.contentInput}
             />
