@@ -1,5 +1,13 @@
 import * as SQLite from 'expo-sqlite';
 
+export interface Memo {
+  id: number;
+  title: string;
+  content: string | null;
+  created_dt: string;
+  updated_dt: string;
+}
+
 /**
  * 데이터베이스 연결을 가져옵니다.
  * 'testmemo.db'라는 이름의 데이터베이스 파일이 생성됩니다.
@@ -63,7 +71,7 @@ export const insertMemo = async (title: string, content: string) => {
 export const getAllMemos = async () => {
   const db = await getDbConnection();
   try {
-    const allRows = await db.getAllAsync('SELECT * FROM t_testmemo ORDER BY created_dt DESC;');
+    const allRows = await db.getAllAsync<Memo>('SELECT * FROM t_testmemo ORDER BY created_dt DESC;');
     return allRows;
   } catch (error) {
     console.error('Get All Memos error:', error);
