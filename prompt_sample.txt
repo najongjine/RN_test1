@@ -17,3 +17,14 @@ await db.execAsync(`
     `);
 
 이거야
+
+
+---------------------
+
+
+db_crud.ts 여기에 나의 메모 데이터를 insert 시키는 
+모듈이 있어.
+
+MemoEditScreen.tsx 여기에서 저장 버튼을 부르면,
+db_crud.ts 에 있는 insert 모듈을 갔다 써서 데이터를 저장 시키고,
+홈 경로로 가게 해줘.
