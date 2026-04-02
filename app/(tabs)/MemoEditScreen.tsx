@@ -1,8 +1,10 @@
 import MyButtonGroup from "@/components/Button/MyButtonGroup";
 import MyCustomButton from "@/components/Button/MyCustomButton";
 import MultilineMemoInput2 from "@/components/Input/KeyboardAwareMultilineInput2";
+import { useRouter } from "expo-router";
 import { useRef, useState } from "react";
 import {
+  Alert,
   KeyboardAvoidingView,
   NativeScrollEvent,
   NativeSyntheticEvent,
@@ -14,8 +16,10 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { insertMemo } from "../utils/db_crud";
 
 export default function MemoEditScreen() {
+  const router = useRouter();
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
 
@@ -25,6 +29,32 @@ export default function MemoEditScreen() {
   function handleScroll(event: NativeSyntheticEvent<NativeScrollEvent>) {
     scrollOffsetRef.current = event.nativeEvent.contentOffset.y;
   }
+
+  const handleSave = async () => {
+    if (!title.trim()) {
+      Alert.alert("알림", "제목을 입력해주세요.");
+      return;
+    }
+
+    try {
+      await insertMemo(title, content);
+      Alert.alert("성공", "메모가 저장되었습니다.", [
+        {
+          text: "확인",
+          onPress: () => {
+            router.replace("/");
+          },
+        },
+      ]);
+    } catch (error) {
+      console.error("Save Error:", error);
+      Alert.alert("오류", "메모 저장 중 문제가 발생했습니다.");
+    }
+  };
+
+  const handleCancel = () => {
+    router.back();
+  };
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -74,13 +104,13 @@ export default function MemoEditScreen() {
           >
             <MyCustomButton
               label={"저장"}
-              onPress={() => {}}
+              onPress={handleSave}
               color="#8adea9ff"
               size="small"
             />
             <MyCustomButton
               label={"취소"}
-              onPress={() => {}}
+              onPress={handleCancel}
               color="#e78260ff"
               size="small"
             />
