@@ -32,7 +32,7 @@ export default function MemoEditScreen() {
     useCallback(() => {
       setTitle((params.title as string) || "");
       setContent((params.content as string) || "");
-    }, [params.title, params.content]),
+    }, [params.title, params.content, isReadonly]),
   );
 
   const scrollRef = useRef<ScrollView>(null);

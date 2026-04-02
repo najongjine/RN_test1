@@ -71,6 +71,13 @@ export default function TabLayout() {
           />
           <Tabs.Screen
             name="MemoEditScreen"
+            listeners={({ navigation }) => ({
+              tabPress: (e) => {
+                // 기본 동작을 막고 파라미터와 함께 직접 이동
+                e.preventDefault();
+                navigation.navigate("MemoEditScreen", { readonly: "false" });
+              },
+            })}
             options={{
               title: "작성",
               tabBarIcon: ({ color }) => (
