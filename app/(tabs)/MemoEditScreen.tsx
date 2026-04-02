@@ -1,3 +1,5 @@
+import MyButtonGroup from "@/components/Button/MyButtonGroup";
+import MyCustomButton from "@/components/Button/MyCustomButton";
 import MultilineMemoInput2 from "@/components/Input/KeyboardAwareMultilineInput2";
 import { useRef, useState } from "react";
 import {
@@ -63,6 +65,26 @@ export default function MemoEditScreen() {
               inputStyle={styles.contentInput}
             />
           </View>
+
+          <MyButtonGroup
+            direction="row"
+            align="center"
+            gap={5}
+            justify="around"
+          >
+            <MyCustomButton
+              label={"저장"}
+              onPress={() => {}}
+              color="#8adea9ff"
+              size="small"
+            />
+            <MyCustomButton
+              label={"취소"}
+              onPress={() => {}}
+              color="#e78260ff"
+              size="small"
+            />
+          </MyButtonGroup>
         </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>
