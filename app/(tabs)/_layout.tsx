@@ -10,6 +10,8 @@ import { useColorScheme } from "@/hooks/use-color-scheme";
 
 async function initDb(db: SQLiteDatabase) {
   try {
+    //await db.execAsync("DROP TABLE IF EXISTS t_testmemo;");
+
     console.log("=== SQLite init 시작 ===");
 
     await db.execAsync(`

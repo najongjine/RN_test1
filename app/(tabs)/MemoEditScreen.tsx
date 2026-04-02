@@ -69,9 +69,7 @@ export default function MemoEditScreen() {
           onScroll={handleScroll}
           contentContainerStyle={styles.container}
         >
-          <Text style={styles.screenTitle}>
-            {"\uBA54\uBAA8 \uC218\uC815 \uD654\uBA74"}
-          </Text>
+          <Text style={styles.screenTitle}>{"메모 편집"}</Text>
 
           <View style={styles.fieldGroup}>
             <Text style={styles.label}>{"제목"}</Text>
