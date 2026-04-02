@@ -24,16 +24,6 @@ export default function MemoEditScreen() {
     scrollOffsetRef.current = event.nativeEvent.contentOffset.y;
   }
 
-  function handleInputScrollRequest(delta: number) {
-    const nextOffset = Math.max(0, scrollOffsetRef.current + delta);
-
-    scrollOffsetRef.current = nextOffset;
-    scrollRef.current?.scrollTo({
-      y: nextOffset,
-      animated: false,
-    });
-  }
-
   return (
     <SafeAreaView style={styles.safeArea}>
       <KeyboardAvoidingView

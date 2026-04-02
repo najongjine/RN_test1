@@ -1,0 +1,19 @@
+내 프로젝트는 react native expo 야.
+app/utils/db_crud.ts
+여기에 expo sqlite를 이용해서 데이터를 insert 하는 모듈 샘플을
+만들어줘.
+쌩쿼리로 하고싶어.
+당연히 매개변수 받아서 insert 하는 샘플 쿼리여야해.
+
+insert할 테이블 대상은
+await db.execAsync(`
+      CREATE TABLE IF NOT EXISTS t_testmemo (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        title TEXT NOT NULL CHECK (length(title) <= 500),
+        content TEXT,
+        created_dt TEXT DEFAULT (datetime('now', 'localtime')),
+        updated_dt TEXT DEFAULT (datetime('now', 'localtime'))
+      );
+    `);
+
+이거야
