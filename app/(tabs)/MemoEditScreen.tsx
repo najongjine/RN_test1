@@ -1,8 +1,8 @@
 import MyButtonGroup from "@/components/Button/MyButtonGroup";
 import MyCustomButton from "@/components/Button/MyCustomButton";
 import MultilineMemoInput2 from "@/components/Input/KeyboardAwareMultilineInput2";
-import { useRouter } from "expo-router";
-import { useRef, useState } from "react";
+import { useFocusEffect, useLocalSearchParams, useRouter } from "expo-router";
+import { useCallback, useRef, useState } from "react";
 import {
   Alert,
   KeyboardAvoidingView,
@@ -20,8 +20,20 @@ import { insertMemo } from "../utils/db_crud";
 
 export default function MemoEditScreen() {
   const router = useRouter();
-  const [title, setTitle] = useState("");
-  const [content, setContent] = useState("");
+  const params = useLocalSearchParams();
+  const isReadonly = params.readonly === "true";
+
+  const [title, setTitle] = useState((params.title as string) || "");
+  const [content, setContent] = useState((params.content as string) || "");
+
+  // 파라미터가 변경되거나 탭 바를 통해 진입 시 상태를 동기화합니다.
+
+  useFocusEffect(
+    useCallback(() => {
+      setTitle((params.title as string) || "");
+      setContent((params.content as string) || "");
+    }, [params.title, params.content]),
+  );
 
   const scrollRef = useRef<ScrollView>(null);
   const scrollOffsetRef = useRef(0);
@@ -69,7 +81,9 @@ export default function MemoEditScreen() {
           onScroll={handleScroll}
           contentContainerStyle={styles.container}
         >
-          <Text style={styles.screenTitle}>{"메모 편집"}</Text>
+          <Text style={styles.screenTitle}>
+            {isReadonly ? "메모 상세보기" : "메모 편집"}
+          </Text>
 
           <View style={styles.fieldGroup}>
             <Text style={styles.label}>{"제목"}</Text>
@@ -78,6 +92,7 @@ export default function MemoEditScreen() {
               onChangeText={setTitle}
               placeholder={"제목입력"}
               style={styles.titleInput}
+              editable={!isReadonly}
             />
           </View>
 
@@ -91,6 +106,7 @@ export default function MemoEditScreen() {
               maxLines={16}
               containerStyle={styles.contentContainer}
               inputStyle={styles.contentInput}
+              editable={!isReadonly}
             />
           </View>
 
@@ -100,14 +116,16 @@ export default function MemoEditScreen() {
             gap={5}
             justify="around"
           >
+            {!isReadonly && (
+              <MyCustomButton
+                label={"저장"}
+                onPress={handleSave}
+                color="#8adea9ff"
+                size="small"
+              />
+            )}
             <MyCustomButton
-              label={"저장"}
-              onPress={handleSave}
-              color="#8adea9ff"
-              size="small"
-            />
-            <MyCustomButton
-              label={"취소"}
+              label={isReadonly ? "닫기" : "취소"}
               onPress={handleCancel}
               color="#e78260ff"
               size="small"

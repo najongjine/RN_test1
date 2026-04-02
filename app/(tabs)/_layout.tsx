@@ -69,6 +69,15 @@ export default function TabLayout() {
               ),
             }}
           />
+          <Tabs.Screen
+            name="MemoEditScreen"
+            options={{
+              title: "작성",
+              tabBarIcon: ({ color }) => (
+                <IconSymbol size={28} name="plus.circle.fill" color={color} />
+              ),
+            }}
+          />
         </Tabs>
       </SafeAreaProvider>
     </SQLiteProvider>

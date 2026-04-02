@@ -1,4 +1,4 @@
-import { useFocusEffect } from "expo-router";
+import { useFocusEffect, useRouter } from "expo-router";
 import React, { useCallback, useState } from "react";
 import {
   FlatList,
@@ -11,6 +11,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { getAllMemos, Memo } from "../utils/db_crud";
 
 export default function HomeScreen() {
+  const router = useRouter();
   const [memos, setMemos] = useState<Memo[]>([]);
 
   // 화면이 포커스될 때마다 데이터를 새로 가져옵니다.
@@ -34,7 +35,21 @@ export default function HomeScreen() {
     const dateStr = item.created_dt ? item.created_dt.split(" ")[0] : "";
 
     return (
-      <TouchableOpacity style={styles.card} activeOpacity={0.7}>
+      <TouchableOpacity
+        style={styles.card}
+        activeOpacity={0.7}
+        onPress={() => {
+          router.push({
+            pathname: "/MemoEditScreen",
+            params: {
+              id: item.id,
+              title: item.title,
+              content: item.content,
+              readonly: "true",
+            },
+          });
+        }}
+      >
         <View style={styles.cardHeader}>
           <Text style={styles.title} numberOfLines={1}>
             {item.title}
