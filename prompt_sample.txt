@@ -46,3 +46,10 @@ index.tsx
 이렇게 list 형태로 보고싶어.
 (참고: db_crud.ts 여기에 메모리스트 가져오는 모듈이 없으면,
 니가 만들고 작업을 수행해줘)
+
+
+----------------
+
+index.tsx 여기에서
+메모 누르면 MemoEditScreen.tsx 가게 해줘.
+그리고 props로 readonly 라는 데이터도 함께 보내게 해줘.
