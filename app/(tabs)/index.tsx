@@ -1,13 +1,13 @@
-import React, { useState, useCallback } from "react";
-import { 
-  FlatList, 
-  StyleSheet, 
-  Text, 
-  View, 
-  TouchableOpacity, 
-  SafeAreaView 
-} from "react-native";
 import { useFocusEffect } from "expo-router";
+import React, { useCallback, useState } from "react";
+import {
+  FlatList,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { getAllMemos, Memo } from "../utils/db_crud";
 
 export default function HomeScreen() {
@@ -17,7 +17,7 @@ export default function HomeScreen() {
   useFocusEffect(
     useCallback(() => {
       loadMemos();
-    }, [])
+    }, []),
   );
 
   const loadMemos = async () => {
@@ -31,7 +31,7 @@ export default function HomeScreen() {
 
   const renderItem = ({ item }: { item: Memo }) => {
     // 날짜 포맷팅 (YYYY-MM-DD HH:mm 형식으로 표시하거나 간단하게)
-    const dateStr = item.created_dt ? item.created_dt.split(' ')[0] : "";
+    const dateStr = item.created_dt ? item.created_dt.split(" ")[0] : "";
 
     return (
       <TouchableOpacity style={styles.card} activeOpacity={0.7}>
@@ -52,9 +52,11 @@ export default function HomeScreen() {
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.headerTitle}>나의 메모</Text>
-        <Text style={styles.headerSubtitle}>{memos.length}개의 메모가 있습니다</Text>
+        <Text style={styles.headerSubtitle}>
+          {memos.length}개의 메모가 있습니다
+        </Text>
       </View>
-      
+
       <FlatList
         data={memos}
         keyExtractor={(item) => item.id.toString()}
