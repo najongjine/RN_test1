@@ -65,3 +65,13 @@ app/utils/db_crud.ts
 * t_testmemo table 에서 id 로 삭제하기
 
 모듈들을 추가해줘
+
+
+---------------
+
+MemoEditScreen.tsx 여기에서
+
+useFocusEffect 이 부분에,
+
+db_crud.ts 에서 id 로 메모 데이터 가져오고,
+title, content 셋팅하는 코드 작성해줘.
