@@ -16,7 +16,7 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { insertMemo } from "../utils/db_crud";
+import { getMemoById, insertMemo, updateMemoById } from "../utils/db_crud";
 
 export default function MemoEditScreen() {
   const router = useRouter();
@@ -31,10 +31,30 @@ export default function MemoEditScreen() {
 
   useFocusEffect(
     useCallback(() => {
-      setId(Number(params.id) || 0);
-      setTitle((params.title as string) || "");
-      setContent((params.content as string) || "");
-    }, [params.id, params.title, params.content, isReadonly]),
+      const loadMemo = async () => {
+        const memoId = Number(params.id);
+        if (memoId) {
+          try {
+            const memo = await getMemoById(memoId);
+            if (memo) {
+              setId(memo.id);
+              setTitle(memo.title);
+              setContent(memo.content || "");
+            }
+          } catch (error) {
+            console.error("Failed to load memo:", error);
+            Alert.alert("오류", "메모를 불러오는 데 실패했습니다.");
+          }
+        } else {
+          // 새 메모 작성 시 초기화
+          setId(0);
+          setTitle("");
+          setContent("");
+        }
+      };
+
+      loadMemo();
+    }, [params.id])
   );
 
   const scrollRef = useRef<ScrollView>(null);
@@ -51,15 +71,27 @@ export default function MemoEditScreen() {
     }
 
     try {
-      await insertMemo(title, content);
-      Alert.alert("성공", "메모가 저장되었습니다.", [
-        {
-          text: "확인",
-          onPress: () => {
-            router.replace("/");
+      if (id > 0) {
+        await updateMemoById(id, title, content);
+        Alert.alert("성공", "메모가 수정되었습니다.", [
+          {
+            text: "확인",
+            onPress: () => {
+              router.replace("/");
+            },
           },
-        },
-      ]);
+        ]);
+      } else {
+        await insertMemo(title, content);
+        Alert.alert("성공", "메모가 저장되었습니다.", [
+          {
+            text: "확인",
+            onPress: () => {
+              router.replace("/");
+            },
+          },
+        ]);
+      }
     } catch (error) {
       console.error("Save Error:", error);
       Alert.alert("오류", "메모 저장 중 문제가 발생했습니다.");
