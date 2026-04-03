@@ -23,16 +23,18 @@ export default function MemoEditScreen() {
   const params = useLocalSearchParams();
   const isReadonly = params.readonly === "true";
 
-  const [title, setTitle] = useState((params.title as string) || "");
-  const [content, setContent] = useState((params.content as string) || "");
+  const [id, setId] = useState(Number(params?.id) || 0);
+  const [title, setTitle] = useState((params?.title as string) || "");
+  const [content, setContent] = useState((params?.content as string) || "");
 
   // 파라미터가 변경되거나 탭 바를 통해 진입 시 상태를 동기화합니다.
 
   useFocusEffect(
     useCallback(() => {
+      setId(Number(params.id) || 0);
       setTitle((params.title as string) || "");
       setContent((params.content as string) || "");
-    }, [params.title, params.content, isReadonly]),
+    }, [params.id, params.title, params.content, isReadonly]),
   );
 
   const scrollRef = useRef<ScrollView>(null);
