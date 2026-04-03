@@ -32,7 +32,7 @@ export default function MemoEditScreen() {
   useFocusEffect(
     useCallback(() => {
       const loadMemo = async () => {
-        const memoId = Number(params.id);
+        const memoId = Number(params?.id || 0);
         if (memoId) {
           try {
             const memo = await getMemoById(memoId);
@@ -54,7 +54,7 @@ export default function MemoEditScreen() {
       };
 
       loadMemo();
-    }, [params.id])
+    }, [params.id]),
   );
 
   const scrollRef = useRef<ScrollView>(null);
