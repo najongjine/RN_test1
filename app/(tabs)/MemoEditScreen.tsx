@@ -16,7 +16,12 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { getMemoById, insertMemo, updateMemoById } from "../utils/db_crud";
+import {
+  deleteMemoById,
+  getMemoById,
+  insertMemo,
+  updateMemoById,
+} from "../utils/db_crud";
 
 export default function MemoEditScreen() {
   const router = useRouter();
@@ -102,6 +107,29 @@ export default function MemoEditScreen() {
     router.back();
   };
 
+  const handleGoToList = () => {
+    router.replace("/");
+  };
+
+  const handleDelete = () => {
+    Alert.alert("삭제 확인", "정말 이 메모를 삭제하시겠습니까?", [
+      { text: "취소", style: "cancel" },
+      {
+        text: "삭제",
+        style: "destructive",
+        onPress: async () => {
+          try {
+            await deleteMemoById(id);
+            router.replace("/");
+          } catch (error) {
+            console.error("Delete Error:", error);
+            Alert.alert("오류", "메모 삭제 중 문제가 발생했습니다.");
+          }
+        },
+      },
+    ]);
+  };
+
   return (
     <SafeAreaView style={styles.safeArea}>
       <KeyboardAvoidingView
@@ -150,20 +178,43 @@ export default function MemoEditScreen() {
             gap={5}
             justify="around"
           >
-            {!isReadonly && (
-              <MyCustomButton
-                label={"저장"}
-                onPress={handleSave}
-                color="#8adea9ff"
-                size="small"
-              />
+            {isReadonly ? (
+              <>
+                <MyCustomButton
+                  label={"삭제"}
+                  onPress={handleDelete}
+                  color="#ef4444"
+                  size="small"
+                />
+                <MyCustomButton
+                  label={"닫기"}
+                  onPress={handleCancel}
+                  color="#6b7280"
+                  size="small"
+                />
+              </>
+            ) : (
+              <>
+                <MyCustomButton
+                  label={"목록"}
+                  onPress={handleGoToList}
+                  color="#6366f1"
+                  size="small"
+                />
+                <MyCustomButton
+                  label={id > 0 ? "수정" : "저장"}
+                  onPress={handleSave}
+                  color="#8adea9ff"
+                  size="small"
+                />
+                <MyCustomButton
+                  label={"취소"}
+                  onPress={handleCancel}
+                  color="#e78260ff"
+                  size="small"
+                />
+              </>
             )}
-            <MyCustomButton
-              label={isReadonly ? "닫기" : "취소"}
-              onPress={handleCancel}
-              color="#e78260ff"
-              size="small"
-            />
           </MyButtonGroup>
         </ScrollView>
       </KeyboardAvoidingView>
