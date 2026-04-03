@@ -75,3 +75,20 @@ useFocusEffect 이 부분에,
 
 db_crud.ts 에서 id 로 메모 데이터 가져오고,
 title, content 셋팅하는 코드 작성해줘.
+
+
+---------------------------------
+
+
+MemoEditScreen.tsx 여기에서
+
+isReadonly 가 true 면
+수정 취소버튼 안보이고, 그냥 닫기, 삭제 버튼만 있게.
+
+isReadonly 가 false 면
+닫기버튼 안보이고
+목록, 수정, 취소 버튼만 있게 만들어줘
+
+버튼 컴포넌트는 
+components/Button
+여기안에 있어. 니가 알아서 갔다 써
