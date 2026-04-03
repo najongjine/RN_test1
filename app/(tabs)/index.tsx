@@ -42,9 +42,9 @@ export default function HomeScreen() {
           router.push({
             pathname: "/MemoEditScreen",
             params: {
-              id: item.id,
-              title: item.title,
-              content: item.content,
+              id: item?.id || 0,
+              title: item?.title || "",
+              content: item?.content || "",
               readonly: "true",
             },
           });

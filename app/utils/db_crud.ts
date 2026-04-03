@@ -78,3 +78,48 @@ export const getAllMemos = async () => {
     return [];
   }
 };
+
+/**
+ * ID로 특정 메모 조회
+ */
+export const getMemoById = async (id: number) => {
+  const db = await getDbConnection();
+  try {
+    const memo = await db.getFirstAsync<Memo>('SELECT * FROM t_testmemo WHERE id = ?;', [id]);
+    return memo;
+  } catch (error) {
+    console.error('Get Memo By ID error:', error);
+    throw error;
+  }
+};
+
+/**
+ * ID로 메모 수정
+ */
+export const updateMemoById = async (id: number, title: string, content: string) => {
+  const db = await getDbConnection();
+  try {
+    const result = await db.runAsync(
+      'UPDATE t_testmemo SET title = ?, content = ?, updated_dt = datetime(\'now\', \'localtime\') WHERE id = ?;',
+      [title, content, id]
+    );
+    return result.changes > 0;
+  } catch (error) {
+    console.error('Update Memo By ID error:', error);
+    throw error;
+  }
+};
+
+/**
+ * ID로 메모 삭제
+ */
+export const deleteMemoById = async (id: number) => {
+  const db = await getDbConnection();
+  try {
+    const result = await db.runAsync('DELETE FROM t_testmemo WHERE id = ?;', [id]);
+    return result.changes > 0;
+  } catch (error) {
+    console.error('Delete Memo By ID error:', error);
+    throw error;
+  }
+};

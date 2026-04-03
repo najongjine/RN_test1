@@ -53,3 +53,15 @@ index.tsx
 index.tsx 여기에서
 메모 누르면 MemoEditScreen.tsx 가게 해줘.
 그리고 props로 readonly 라는 데이터도 함께 보내게 해줘.
+
+
+---------------
+
+app/utils/db_crud.ts
+
+여기에 
+* t_testmemo table 에서 id 로 메모데이터 가져오기
+* t_testmemo table 에서 id 로 메모데이터 수정하기
+* t_testmemo table 에서 id 로 삭제하기
+
+모듈들을 추가해줘
